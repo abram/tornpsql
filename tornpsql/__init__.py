@@ -133,9 +133,19 @@ class Connection(object):
             cursor.close()
             raise
 
-    def execute(self, query, *parameters):
-        """Alias for query"""
-        return self.query(query, *parameters)
+    def execute(self, query, *parameters, **kwparameters):
+        """Executes the given query, returning the lastrowid from the query."""
+        return self.execute_lastrowid(query, *parameters, **kwparameters)
+
+    def execute_lastrowid(self, query, *parameters, **kwparameters):
+        """Executes the given query, returning the lastrowid from the query."""
+        cursor = self._cursor()
+        try:
+            self._execute(cursor, query, parameters, kwparameters)
+            return cursor.lastrowid
+        finally:
+            cursor.close()
+
 
     def get(self, query, *parameters, **kwargs):
         """Returns the first row returned for the given query."""
